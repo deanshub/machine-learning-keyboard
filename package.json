@@ -46,6 +46,7 @@
     "webpack-hot-middleware": "^2.7.1"
   },
   "dependencies": {
+    "array-pad": "0.0.1",
     "autoresponsive-react": "^1.1.10",
     "history": "^3.0.0",
     "immutable": "^3.8.1",
@@ -53,6 +54,7 @@
     "rxjs": "^5.0.0-beta.10",
     "simplify-js": "^1.2.1",
     "superagent": "^2.1.0",
+    "synaptic": "^1.0.7",
     "url-loader": "^0.5.7"
   }
 }
