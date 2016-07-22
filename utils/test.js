@@ -12,7 +12,9 @@ result.subscribe(text => {
   return wordSubject.complete()
 })
 
-wordSubject.subscribe(word=>{
+wordSubject.filter(word=>word.length<6)
+.subscribe(word=>{
+  // console.log(word);
   console.log(wordGenerator.generate(word, 62))
 })
 

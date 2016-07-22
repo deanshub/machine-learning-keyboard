@@ -5,7 +5,7 @@ let Router = require('koa-router')
 let router = new Router()
 
 router.post('/path', function *(){
-  console.log(this.request.body);
+  // this.request.body.path
   yield this.body = {ok:1}
 })
 

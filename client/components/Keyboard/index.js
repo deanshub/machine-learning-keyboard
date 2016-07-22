@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react'
 import ReactDom from 'react-dom'
 import classnames from 'classnames'
 import { Observable } from 'rxjs'
+import request from 'superagent'
+import simplify from 'simplify-js'
 
 import style from './style.css'
 import imgPath from '../../pictures/keyboard.jpg'
@@ -77,7 +79,46 @@ class Keyboard extends Component {
     //   console.log(getOffset(x));
     // })
 
-    mouseButton.subscribe(()=>{
+    mouseup.subscribe(()=>{
+      // repaint
+      let points = this.path.reduce((path, point) => {
+        let newPath = path
+        if (!path[path.length] ||
+          (path[path.length].x !== point.first.offsetX &&
+          path[path.length].y !== point.first.offsetY)){
+          newPath = newPath.concat([{x: point.first.offsetX,y: point.first.offsetY}])
+        }
+        if (!path[path.length] ||
+          (path[path.length].x !== point.second.offsetX &&
+          path[path.length].y !== point.second.offsetY)){
+          newPath = newPath.concat([{x: point.second.offsetX,y: point.second.offsetY}])
+        }
+        return newPath
+      },[])
+      // simplify(points, tolerance, highestQuality)
+      let simplifyedPath = simplify(points, 10).map(point=>{
+        return {offsetX: point.x, offsetY: point.y}
+      })
+      // console.log(points.length, simplifyedPath.length);
+      this.clearCanvas(context)
+      context.beginPath()
+      context.moveTo(simplifyedPath[0].offsetX, simplifyedPath[0].offsetY)
+      Observable.from(simplifyedPath).skip(1).subscribe((point)=>{
+        context.lineTo(point.offsetX, point.offsetY)
+        context.moveTo(point.offsetX, point.offsetY)
+        context.stroke()
+      })
+
+      if(this.path.length>0){
+        request.post('/api/path')
+        .send({path:this.path})
+        .set('Accept','application/json')
+        .end((err,res)=>{
+          console.log(err?err:res.body)
+        })
+      }
+    })
+    mousedown.subscribe(()=>{
       this.clearCanvas(context)
     })
     painting.subscribe((x) => {
